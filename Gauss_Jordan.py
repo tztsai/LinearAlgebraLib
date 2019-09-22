@@ -75,5 +75,3 @@ def Gauss_Jordan(mat, fraction_mode=True, LaTeX_code=False):
             entry = mat[i][c]
             if entry != 0:
                 scale_and_add(mat, r, -entry, i, LaTeX_code)
-
-Gauss_Jordan([[1,4,3], [6,-4,3],[2,2,5]], 1, 1)
