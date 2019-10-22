@@ -31,7 +31,35 @@ def print_latex_code(mat):
     print(' \\\\ '.join([' & '.join(map(str,row)) for row in mat]))
     print('\\end{bmatrix}')
 
-def eliminate(mat, fraction_mode=True, display=None):
+# row operations
+def swap_rows(rows, i, j, display):
+    rows[i], rows[j] = rows[j], rows[i]
+    if display == 'latex':
+        print('\\overset{E_{%d, %d}}{\\longrightarrow}'%(i+1, j+1))
+        print_latex_code(rows)
+    elif display == 'normal':
+        print('swap row {}, {}:'.format(i, j))
+        display_mat(rows)
+
+def scale_row(rows, k, s, display):
+    rows[k] = [s*e for e in rows[k]]
+    if display == 'latex':
+        print('\\overset{E_{\\left(%s\\right)%d}}{\\longrightarrow}'%(str(s), k+1))
+        print_latex_code(rows)
+    elif display == 'normal':
+        print('scale row {} by {}:'.format(k, s))
+        display_mat(rows)
+
+def scale_and_add(rows, src, scale, dest, display):
+    rows[dest] = [scale*oe+de for oe, de in zip(rows[src], rows[dest])]
+    if display == 'latex':
+        print('\\overset{E_{\\left(%s\\right)%d,%d}}{\\longrightarrow}'%(str(scale), src+1, dest+1))
+        print_latex_code(rows)
+    elif display == 'normal':
+        print('add row {} multiplied by {} to row {}:'.format(src, scale, dest))
+        display_mat(rows)
+
+def eliminate(mat, back=True, fraction_mode=True, display=None):
     check_matrix(mat)
 
     # display the orginal matrix
@@ -39,32 +67,6 @@ def eliminate(mat, fraction_mode=True, display=None):
         print_latex_code(mat)
     elif display == 'normal':
         display_mat(mat)
-
-    # row operations
-    def swap_row(rows, i, j, display):
-        rows[i], rows[j] = rows[j], rows[i]
-        if display == 'latex':
-            print('\\overset{E_{%d, %d}}{\\longrightarrow}'%(i+1, j+1))
-            print_latex_code(rows)
-        elif display == 'normal':
-            print('swap row {}, {}:'.format(i, j))
-            display_mat(rows)
-    def scale_row(rows, k, s, display):
-        rows[k] = [s*e for e in rows[k]]
-        if display == 'latex':
-            print('\\overset{E_{\\left(%s\\right)%d}}{\\longrightarrow}'%(str(s), k+1))
-            print_latex_code(rows)
-        elif display == 'normal':
-            print('scale row {} by {}:'.format(k, s))
-            display_mat(rows)
-    def scale_and_add(rows, src, scale, dest, display):
-        rows[dest] = [scale*oe+de for oe, de in zip(rows[src], rows[dest])]
-        if display == 'latex':
-            print('\\overset{E_{\\left(%s\\right)%d,%d}}{\\longrightarrow}'%(str(scale), src+1, dest+1))
-            print_latex_code(rows)
-        elif display == 'normal':
-            print('add row {} multiplied by {} to row {}:'.format(src, scale, dest))
-            display_mat(rows)
 
     def all_zero(vect):
         return all(x == 0 for x in vect)
@@ -86,7 +88,7 @@ def eliminate(mat, fraction_mode=True, display=None):
                 pivrow, pivot = i, entry
                 break
         if pivrow != r:
-            swap_row(mat, r, pivrow, display)
+            swap_rows(mat, r, pivrow, display)
         if pivot != 1:
             if fraction_mode:
                 scale_row(mat, r, Fraction(1, pivot), display)
@@ -97,14 +99,15 @@ def eliminate(mat, fraction_mode=True, display=None):
             if entry == 0: continue
             scale_and_add(mat, r, -entry, i, display)
     # back substitution
-    for r in range(r_num-1, 0, -1):
-        c = pivot_col_pos(mat[r:])
-        if not c: continue
-        for i in range(r):
-            entry = mat[i][c]
-            if entry != 0:
-                scale_and_add(mat, r, -entry, i, display)
-
+    if back:
+        for r in range(r_num-1, 0, -1):
+            c = pivot_col_pos(mat[r:])
+            if not c: continue
+            for i in range(r):
+                entry = mat[i][c]
+                if entry != 0:
+                    scale_and_add(mat, r, -entry, i, display)
+    return mat
 
 
 def addv(v1, v2):
@@ -122,4 +125,14 @@ def multm(m1, m2):
     assert cols_num(m1) == rows_num(m2)
     return [[dotp(row, col(m2, c)) for c in range(cols_num(m2))] for row in m1]
 
-eliminate([[1,2,3,0],[0,1,4,0],[5,6,0,1]], 1, 'latex')
+def eval_mat(mstr):
+    return [[eval(e) for e in r.split(',')] for r in mstr.splitlines()]
+
+m = eval_mat("""1, 0, 3, 4, 0, 0
+0, 2, 0, 0, 0, 6
+1, 0, 0, 4, 0, 0
+0, 0, 3, 4, 5, 0
+1, 2, 3, 0, 0, 0
+1, 0, 3, 0, 0, 6""")
+
+eliminate(m, False, True, 'normal')
