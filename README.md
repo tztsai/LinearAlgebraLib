@@ -1,4 +1,4 @@
-# Linear-Algebra
+# My Linear Algebra Library
 
 Features:
 
