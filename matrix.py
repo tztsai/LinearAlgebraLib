@@ -112,10 +112,3 @@ def transpose(m):
 
 def to_float(m, prec=2):
     return map_mat(lambda x: round(float(x), prec), m)
-
-
-### TEST ###
-A = read_mat("""9 0 3 4 0 0
-0 9 0 0 0 6
-1 2 9 0 0 0
-1 0 0 9 0 0""")

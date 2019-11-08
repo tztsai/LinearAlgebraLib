@@ -76,26 +76,10 @@ def GaussSeidel_iter(A, B, X, n=100):
         yield X
 
 
-### TEST ###
-A = read_mat("""9 0 3 4 0 0
-0 9 0 0 0 6
-1 2 9 0 0 0
-1 0 0 9 0 0
-0 0 3 4 9 0
-1 0 3 0 0 9""")
-B = read_mat("""16
-15
-12
-10
-16
-13""")
-solve(A, B)
-Xinit = [[0] for i in range(6)]
-for X in Jacobi_iter(A, B, Xinit, 3):
-    pass
-for Y in GaussSeidel_iter(A, B, Xinit, 3):
-    pass
-X_err = [x-1 for x in transpose(X)[0]]
-Y_err = [y-1 for y in transpose(Y)[0]]
-print(round(float(dotp(X_err, X_err)), 5))
-print(round(float(dotp(Y_err, Y_err)), 5))
+
+A = read_mat("""1 2 3
+2 3 4
+2 4 6""")
+Asq = multm(A, A)
+print_latex_code(Asq)
+print(det(Asq))
