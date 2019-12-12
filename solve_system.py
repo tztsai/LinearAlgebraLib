@@ -9,9 +9,9 @@ def check_correct(A, X, B):
         raise ValueError('I cannot get the correct answer!')
 
 
-def GJsolve(A, B):
+def GJsolve(A, B, display):
     AUG = augment(A, B)
-    eliminate(AUG)
+    eliminate(AUG, True, display)
     X = slice(AUG, cols_num(A))
     check_correct(A, X, B)
     return X
@@ -49,11 +49,11 @@ def solveTriang(M, B, direction='up', display=None):
     return ans
 
 
-def solve(A, B):
+def solve(A, B, display=None):
     cn = cols_num(A)
     M = augment(A, B)
-    eliminate(M, False)
-    X = solveTriang(slice(M, 0, cn), slice(M, cn))
+    eliminate(M, False, display)
+    X = solveTriang(slice(M, 0, cn), slice(M, cn), 'up', 'display')
     check_correct(A, X, B)
     return X
 
@@ -74,12 +74,3 @@ def GaussSeidel_iter(A, B, X, n=100):
     for i in range(n):
         X = multm(invDL, subm(B, multm(U, X)))
         yield X
-
-
-
-A = read_mat("""1 2 3
-2 3 4
-2 4 6""")
-Asq = multm(A, A)
-print_latex_code(Asq)
-print(det(Asq))

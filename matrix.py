@@ -25,7 +25,6 @@ def print_latex_code(mat):
     print('\\begin{bmatrix}')
     print(' \\\\ '.join([' & '.join(map(str,row)) for row in mat]))
     print('\\end{bmatrix}')
-######################
 
 
 #### VECTOR ####
@@ -42,6 +41,8 @@ def dotp(v1, v2):
     assert len(v1) == len(v2)
     return sum([a1*a2 for a1,a2 in zip(v1, v2)])
 
+
+#### MATRIX ####
 def rows_num(rows):
     return len(rows)
 
@@ -55,8 +56,9 @@ def row(rows, k):
 def col(rows, k):
     assert k < cols_num(rows)
     return [row[k] for row in rows]
-######################
 
+def to_mat(v):
+    return [[x] for x in v]
 
 def addm(m1, m2):
     assert rows_num(m1) == rows_num(m2) and cols_num(m1) == cols_num(m2)
@@ -112,3 +114,4 @@ def transpose(m):
 
 def to_float(m, prec=2):
     return map_mat(lambda x: round(float(x), prec), m)
+

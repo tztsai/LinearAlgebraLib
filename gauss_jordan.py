@@ -87,19 +87,20 @@ def eliminate(mat, back=True, display=None):
 
 def inverse(m):
     assert(issquare(m))
-    inv = eliminate(m)
-    assert(mat_eq(m, idmat(len(m))))
+    n = m.copy()
+    inv = eliminate(n)
+    assert(mat_eq(n, idmat(len(n))))
     return inv
 
 
 def LU(m):
-    n = m
+    n = m.copy()
     E = eliminate(n, False)
     return inverse(E), n
 
 
 def det(m):
     assert(issquare(m))
-    n = m
+    n = m.copy()
     eliminate(n, False)
     return reduce(lambda x, y: x*y, [n[i][i] for i in range(len(m))])
